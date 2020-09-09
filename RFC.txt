@@ -1,0 +1,244 @@
+Internet Architecture Board (IAB)                    Spring Han, Editor
+Request for Comments: 1212                                    June 2020
+Category: Informational                                         
+ISSN: 2070-1721
+
+How to Implement a Game of Rock-Paper-Scissors over the Internet
+   
+Status of This Memo
+
+   This document is not an Internet Standards Track specification; it 
+   is published for informational purposes.
+   
+   This is a contribution to the RFC Series, independently of any other
+   RFC stream.  The RFC Editor has chosen to publish this document at 
+   its discretion and makes no statement about its value for 
+   implementation or deployment.
+   
+IPR Statement
+
+   By submitting this Internet-Draft, I certify that any applicable
+   patent or other IPR claims of which I am aware have been disclosed,
+   or will be disclosed, and any of which I become aware will be
+   disclosed, in accordance with RFC 3668.
+   
+Abstract
+
+   The document specifies a how to effectively and securely implement
+   a game of Rock-Paper-Scissors between two players over the internet
+   in such a way to minimize the possibility of cheating and effect of
+   network issues.
+   
+   
+RFC 1212                     Informational                     [Page 1]
+
+Internet-Draft        A Game of Rock-Paper-Scissors         9 June 2020 
+ 
+ 
+Table of Contents [Page 1]
+
+   1. Introduction ................................................   1
+   2. Rock-Paper-Scissors .........................................   2
+	  2.1. Selection of Players ...................................   2
+	  2.2. Transmission of Data between Players ...................   2
+	  2.3. Playing the Game .......................................   2
+	  2.4. Dealing with Disconnection .............................   3
+	  2.5. Storage of Results .....................................   3
+   3. Security Considerations .....................................   4
+   
+1. Introduction
+
+   Rock-Paper-Scissors is a game where two players are given a choice
+   to choose between three possibilities, [ROCK], [PAPER] and 
+   [SCISSORS]. They must both choose within a certain amount of time 
+   between each other. This is usually denoted by a countdown or timer.
+   The two choices are compared the the winner is who's choice beats 
+   the others. [ROCK] beats [SCISSORS], [SCISSORS] beats [PAPER] and 
+   [PAPER] beats [ROCK].
+
+   
+RFC 1212                     Informational                     [Page 2]
+
+Internet-Draft        A Game of Rock-Paper-Scissors         9 June 2020    
+
+
+2. Rock-Paper-Scissors 
+
+2.1. Selection of Players
+	
+   Players have a username and password which they use to identify
+   themselves with. Each player also has a trust factor which is
+   used to determine how often non-standard events occur within
+   their games.
+	
+   Each player sends a request to the server that they are looking
+   for an opponent. The server stores all the players looking for
+   an opponent and when there are two players whose trust factor 
+   are within a certain range of each other available, t
+   pairs the two together and sends each an address to which they
+   can communicate together through. 
+
+2.2. Playing the Game
+	
+   Once the players have hand-shaken with each other then a timer count
+   down till the game starts. Once the players have acknowledged 
+   each other, each has a timer that counts down till the game starts.
+
+   When the game starts each player has to make a choice within
+   an amount of time. The game will time-stamp when the players were 
+   matched, each time the players must make a choice, each time the 
+   players make a choice and when the players receive the opponents 
+   choice. 
+	
+   When the players receive the opponents choice, the game will hide
+   the choice until the current player makes a choice, or the time to
+   make a choice runs out. Afterwards the opponents choice is revealed
+   to the player and the game checks to see whether they lost or won.
+   The result is stored on each players computer separately and the 
+   game is played again till a player has a total of three wins.
+	
+   If a player does not receive receive a transmission within a
+   set amount of time from the opponent then the match is dropped and 
+   the information is sent to the server that the game was dropped due 
+   to network issues.
+	
+	
+RFC 1212                     Informational                     [Page 3]
+
+Internet-Draft        A Game of Rock-Paper-Scissors         9 June 2020  
+
+	
+2.3. Prevention of Cheating [Page 3]
+   
+   To prevent cheating by players pretending to disconnect, timestamps
+   of when the game receives the information about the opponents move
+   and when the player makes a decision are compared to make sure the
+   time between the two is not to long. Players are also given a trust
+   factor that is calculated from the number of games that the player
+   disconnects from and how often the player disconnects when they are 
+   losing. 
+   
+   Once a player choice has been made it cannot be changed and the
+   opponents move is only revealed once the outcome has been 
+   calculated. There will also be checks to prevent the player from 
+   altering client-side information. Results will also be stored on
+   both players computers separately.
+   
+   All packets sent by the opponent with their signature is stored on
+   the player's client. At the end of the game when the result is
+   sent to the server, the signed moves are also sent to the server.
+   This is to prove that the opponent did make the moves and to prevent
+   implement non-repudiation of the results.
+   
+   Each move is also encrypted by the game which stores the information
+   until a move is made by the player so they cannot read the information
+   before they make a move.
+  
+  (Non-RFC Comment: I don't know enough about this to go into more detail)
+   
+	
+2.4. Storage of Results
+	
+   Once a winner has been declared on a players computer, the result is
+   sent to the server. The server will then compare the results. If 
+   there is no difference then the result is stored and players trust
+   factor is increased. If there is a difference between results then
+   the game is scrapped and both players have their trust factor 
+   decreased. 
+   
+   In the long term normal players trust factors should stabilize while
+   those who often have non-standard games will have their decrease and
+   will more likely play against each other.
+   
+   If a player disconnects and the server does not receive a response
+   from that player, the server stores the information. Players who
+   have disconnected over a set number of times in the time range
+   will be unable to play for a time.
+   
+   (Non-RFC Comment: I'm not sure how to word variable time frames)
+   
+
+RFC 1212                     Informational                    [Page 4]
+
+Internet-Draft        A Game of Rock-Paper-Scissors        9 June 2020 
+
+3. Security Considerations
+
+   To ensure that the person the player is communicating to his 
+   opponent, each player should sign the information they are sending 
+   with their private key before encrypting it with their opponents
+   public key. We sign the information to prove that it is our move
+   and then encrypt to prevent third parties from seeing the 
+   information.
+
+   To prevent players replaying same information at the start of each
+   game the server sends a nonce to each player. When players return 
+   the results to the server they also encrypt the nonce with their
+   other information to prove that this information is the most recent
+   game. Other security measures such as timestamps of moves and 
+   packets are also included in the information.
+   
+   The players are only allowed to send packets through certain ports,
+   the packets are checked for the data they contain. If the opponent 
+   is sending trash packets through the ports/game then we close the 
+   connection? 
+   
+   (Non-RFC Comment: I'm not sure how to protect from the dishonest players you're talking about)
+   
+	
+RFC 1212                     Informational                    [Page 5]
+
+Internet-Draft        A Game of Rock-Paper-Scissors         9 June 2020  
+ 
+ 
+Authors' Addresses
+
+   Some Address
+
+   Email: someemail@gmail.com
+ 
+   
+RFC 1212                     Informational                     [Page 6]
+
+Internet-Draft        A Game of Rock-Paper-Scissors         9 June 2020  
+ 
+Full Copyright Statement
+
+   Copyright (C) ??? (2020).
+
+   Copyright (C) The Internet Society (2004).
+
+   This document is subject to the rights, licenses and restrictions
+   contained in BCP 78 and at www.rfc-editor.org, and except as set
+   forth therein, the authors retain all their rights.
+   This document and the information contained herein are provided on an
+   "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE
+   REPRESENTS OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE
+   INTERNET ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF
+   THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED
+   WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+Intellectual Property
+
+   The IETF takes no position regarding the validity or scope of any
+   Intellectual Property Rights or other rights that might be claimed
+   to pertain to the implementation or use of the technology
+   described in this document or the extent to which any license
+   under such rights might or might not be available; nor does it
+   represent that it has made any independent effort to identify any
+   such rights.  Information on the ISOC's procedures with respect to
+   rights in ISOC Documents can be found in BCP 78 and BCP 79.
+
+   Copies of IPR disclosures made to the IETF Secretariat and any
+   assurances of licenses to be made available, or the result of an
+   attempt made to obtain a general license or permission for the use
+   of such proprietary rights by implementers or users of this
+   specification can be obtained from the IETF on-line IPR repository
+   at http://www.ietf.org/ipr.
+
+   The IETF invites any interested party to bring to its attention
+   any copyrights, patents or patent applications, or other
+   proprietary rights that may cover technology that may be required
+   to implement this standard.  Please address the information to the
+   IETF at ietf-ipr@ietf.org.

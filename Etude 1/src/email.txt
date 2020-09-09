@@ -1,0 +1,8 @@
+axe-_bow@cs.com
+axebow@cs.com
+a__dot_b@cs.com
+dot_at_@cs_dot_com
+a_dot_a@a_dot_b_dot_c.cs.com
+andrew_at_[139_dot_80_dot_91_dot_50]
+andrew@[[139.80.91.50]]
+andrew@[139.80.co.nz]

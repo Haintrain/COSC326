@@ -1,0 +1,13 @@
+4970116 - Report Etude 5
+
+We have a set of points and the variable of a radius of the circle.
+
+The program creates initially tries to iterate through all the possible combinations of circles created from all the points.
+We first check if the first two points are further away than the size of the minimum circle. If so then we skip the current
+set of points and go to the next set of points. Otherwise we check to see if the number of points lying within this circle less than 11
+and the number lying on the edges and inside is more than 11. If it is then we set the minimum size as the new circle radius.
+
+We do this for each set of 2 and 3 points, with the 3 point circle checks being nested inside the 2 point checks. So that if the distance
+between the 2 points is larger than the minimum circle than we know the 3 point circle is larger than the minimum and we do not need to check it.
+We also have a few checks to make sure that if we have 3 points they do not sit on a single line and that the points we have are not the same
+as each other.
